@@ -22,17 +22,33 @@ var ball = {
     dy: 3
 }
 
+var rightWristX = 0;
+var rightWristY = 0;
+var scorerightWrist = 0;
+var gameStatus = "";
+
 function setup() {
     var canvas = createCanvas(700, 600);
     video = createCapture(VIDEO);
     video.size(700, 600);
-    video.hide
+    video.hide();
 
-    poseNet = ml5.poseNet(video, modelloaded);
-    poseNet.on('pose', gotposes);
+    poseNet = ml5.poseNet(video, modelLoaded);
+    poseNet.on('pose', gotPoses);
 }
 
-function modelloaded() {
+function gotPoses(results) {
+    if (results.length > 0) {
+        rightWristX = results[0].pose.rightWrist.x;
+        rightWristY = results[0].pose.rightWrist.y;
+
+        scorerightWrist = results[0].pose.keypoints[10].score;
+
+        console.log(scorerightWrist);
+    }
+}
+
+function modelLoaded() {
     console.log("I am loaded!");
 }
 
@@ -48,7 +64,16 @@ function draw() {
     stroke("black");
     rect(0, 0, 20, 700);
 
-    //funtion paddleInCanvas call 
+    if (scorerightWrist > 0.2) {
+        fill(red);
+        stroke(red);
+        circle(rightWristX, rightWristY, 30);
+
+
+
+    }
+
+    //funtion paddleInCanvas call
     paddleInCanvas();
 
     //left paddle
@@ -152,7 +177,7 @@ function move() {
 }
 
 
-//width height of canvas speed of ball 
+//width and height of canvas speed of ball 
 function models() {
     textSize(18);
     fill(255);
